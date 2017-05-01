@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Warehouse</string>
+    <string name="warehouse_logo">Warehouse logo</string>
+    <string name="random_picture">Supply</string>
+</resources>

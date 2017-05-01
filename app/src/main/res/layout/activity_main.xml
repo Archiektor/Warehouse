@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.example.archiektor.warehouse.MainActivity">
+
+    <ImageView
+        android:layout_width="1200dp"
+        android:layout_height="100dp"
+        android:layout_gravity="center"
+        android:contentDescription="@string/warehouse_logo"
+        android:src="@drawable/warehouse" />
+
+    <ExpandableListView
+        android:id="@+id/listviewExpandable"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:divider="@android:color/darker_gray"
+        android:dividerHeight="5dp"
+        android:indicatorLeft="?android:attr/expandableListPreferredItemIndicatorRight"></ExpandableListView>
+
+</LinearLayout>
