@@ -2,4 +2,25 @@
     <string name="app_name">Warehouse</string>
     <string name="warehouse_logo">Warehouse logo</string>
     <string name="random_picture">Supply</string>
+    <string name="name_of_supply">Name of supply</string>
+    <string name="quantity_string">Quantity :</string>
+    <string name="condition"><![CDATA[Remind if less than >]]></string>
+    <string name="quantity_number">Real NUMBER</string>
+    <string name="image_od_supply">Image of supply</string>
+    <string name="plus_button">Button \"plus\"</string>
+    <string name="minus_button">Button \"minus\"</string>
+    <string name="setCondition">Set</string>
+    <string name="number_of_adding_supplies">type +</string>
+    <string name="number_of_minus_supplies">type -</string>
+    <string name="error">error</string>
+
+    <string-array name="conditions">
+        <item>50</item>
+        <item>100</item>
+        <item>250</item>
+        <item>500</item>
+        <item>1000</item>
+        <item>2500</item>
+        <item>5000</item>
+    </string-array>
 </resources>

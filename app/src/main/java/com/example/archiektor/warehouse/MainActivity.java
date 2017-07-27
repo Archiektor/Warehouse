@@ -1,6 +1,7 @@
 package com.example.archiektor.warehouse;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ExpandableListView;
@@ -22,7 +23,6 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // get the listview
         expListView = (ExpandableListView) findViewById(R.id.listviewExpandable);
 
         // preparing list data
@@ -30,7 +30,6 @@ public class MainActivity extends Activity {
 
         listAdapter = new ExpandableListAdapter(this, listTitle, listDetail);
 
-        // setting list adapter
         expListView.setAdapter(listAdapter);
 
         // Listview on child click listener
@@ -39,9 +38,20 @@ public class MainActivity extends Activity {
             @Override
             public boolean onChildClick(ExpandableListView parent, View v,
                                         int groupPosition, int childPosition, long id) {
+                String nameOfSupply;
+
                 Toast.makeText(
                         getApplicationContext(),
                         listTitle.get(groupPosition) + " : " + listDetail.get(listTitle.get(groupPosition)).get(childPosition), Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(v.getContext(), EditingActivity.class);
+                intent.setAction(Intent.ACTION_SEND);
+                nameOfSupply = listTitle.get(groupPosition) + "/" + listDetail.get(listTitle.get(groupPosition)).get(childPosition);
+                //try to push Drawable in intent and set in new Activity
+                //int res = (int) v.get
+                intent.putExtra(EditingActivity.EXTRA_MESSAGE, nameOfSupply);
+                if (intent.resolveActivity(getPackageManager()) != null) {
+                    startActivity(intent);
+                }
                 return false;
             }
         });
@@ -68,6 +78,13 @@ public class MainActivity extends Activity {
 
             }
         });
+/**
+ expListView.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
+@Override public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
+v.
+return false;
+}
+});*/
     }
 
 
@@ -83,15 +100,6 @@ public class MainActivity extends Activity {
         listTitle.add("Spacers");
         listTitle.add("Screws (wood)");
 
-        // Adding header data
-//        listTitle.add(new Supplies("Bolts", R.drawable.bolt));
-//        listTitle.add(new Supplies("Butterflynuts", R.drawable.butterflynut));
-//        listTitle.add(new Supplies("Screws (metal)", R.drawable.metallscrew));
-//        listTitle.add(new Supplies("Rivets", R.drawable.rivet));
-//        listTitle.add(new Supplies("Spacers", R.drawable.spacer));
-//        listTitle.add(new Supplies("Screws (wood)", R.drawable.woodscrew));  //6
-
-        // Adding child data
         List<String> bolt = new ArrayList<>();
         bolt.add("M6");
         bolt.add("M8");
@@ -105,18 +113,18 @@ public class MainActivity extends Activity {
         butterflynut.add("M6");
 
         List<String> metallscrew = new ArrayList<>();
-        metallscrew.add("Screw 3,5 Х 9,5");
-        metallscrew.add("Screw 3,5 Х 11");
-        metallscrew.add("Screw 4,2 Х 16");
-        metallscrew.add("Screw 4,2 Х 19");
-        metallscrew.add("Screw 4,2 Х 25");
+        metallscrew.add("3,5 Х 9,5");
+        metallscrew.add("3,5 Х 11");
+        metallscrew.add("4,2 Х 16");
+        metallscrew.add("4,2 Х 19");
+        metallscrew.add("4,2 Х 25");
 
         List<String> rivet = new ArrayList<>();
-        rivet.add("Rivet 4 Х 6");
-        rivet.add("Rivet 4 Х 8");
-        rivet.add("Rivet 4 Х 12");
-        rivet.add("Rivet 4,8 Х 12");
-        rivet.add("Rivet 4,8 Х 16");
+        rivet.add("4 Х 6");
+        rivet.add("4 Х 8");
+        rivet.add("4 Х 12");
+        rivet.add("4,8 Х 12");
+        rivet.add("4,8 Х 16");
 
         List<String> spacer = new ArrayList<>();
         spacer.add("M4");
@@ -124,11 +132,11 @@ public class MainActivity extends Activity {
         spacer.add("M6");
 
         List<String> woodscrew = new ArrayList<>();
-        woodscrew.add("Screw 3,5 Х 9,5");
-        woodscrew.add("Screw 3,5 Х 11");
-        woodscrew.add("Screw 4,2 Х 16");
-        woodscrew.add("Screw 4,2 Х 19");
-        woodscrew.add("Screw 4,2 Х 25");
+        woodscrew.add("3,5 Х 9,5");
+        woodscrew.add("3,5 Х 11");
+        woodscrew.add("4,2 Х 16");
+        woodscrew.add("4,2 Х 19");
+        woodscrew.add("4,2 Х 25");
 
 
         listDetail.put(listTitle.get(0), bolt); // Header, Child data
