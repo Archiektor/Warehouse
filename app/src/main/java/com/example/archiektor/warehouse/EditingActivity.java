@@ -6,10 +6,10 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -26,6 +26,7 @@ public class EditingActivity extends Activity implements View.OnClickListener {
 
     private DatabaseHelper databaseHelper;
     private Cursor cursor;
+    private SQLiteDatabase db;
 
     public static final String EXTRA_MESSAGE = "message";
     Toast toast;
@@ -122,11 +123,8 @@ public class EditingActivity extends Activity implements View.OnClickListener {
 
         quantityNumber = (TextView) findViewById(R.id.quantity_number);
         initializateDatabase(nameOfSupply3);
-        //String quantityString = String.valueOf(quantityAfterMinus);
-        //quantityNumber.setText(quantityString);
 
         spinner = (Spinner) findViewById(R.id.spinner);
-
 
         editTextAdd = (EditText) findViewById(R.id.editTextAdd);
         editTextMinus = (EditText) findViewById(R.id.editTextMinus);
@@ -148,15 +146,9 @@ public class EditingActivity extends Activity implements View.OnClickListener {
                 for (Supply obj : set) {
                     if (Objects.equals(obj.getName(), nameOfSupply3)) {
                         Integer plusNumber = Integer.parseInt(editTextAdd.getText().toString());
-                        //initializateDatabase(nameOfSupply3);
-                        updateDatabase(nameOfSupply3, Integer.toString(plusNumber));
-                        /*obj.setQuantity(plusNumber + obj.getQuantity());
-                        quantityAfterPlus = obj.getQuantity();
-                        String quantityString = String.valueOf(quantityAfterPlus);
-                        quantityNumber.setText(quantityString);
-
+                        updateDatabase(nameOfSupply3, Integer.toString(plusNumber), true);
                         editTextAdd.setText("");
-                        editTextAdd.requestFocus();*/
+                        editTextAdd.requestFocus();
 
                     }
                 }
@@ -165,11 +157,8 @@ public class EditingActivity extends Activity implements View.OnClickListener {
                 for (Supply obj : set) {
                     if (Objects.equals(obj.getName(), nameOfSupply3)) {
                         Integer minusNumber = Integer.parseInt(editTextMinus.getText().toString());
-                        obj.setQuantity(obj.getQuantity() - minusNumber);
-                        quantityAfterMinus = obj.getQuantity();
-                        String quantityString = String.valueOf(quantityAfterMinus);
-                        quantityNumber.setText(quantityString);
 
+                        updateDatabase(nameOfSupply3, Integer.toString(minusNumber), false);
                         editTextMinus.setText("");
                         editTextMinus.requestFocus();
                     }
@@ -179,29 +168,27 @@ public class EditingActivity extends Activity implements View.OnClickListener {
                 for (Supply obj : set) {
                     if (Objects.equals(obj.getName(), nameOfSupply3)) {
                         Integer selected = Integer.parseInt(spinner.getSelectedItem().toString());
-                        // !!!!!!! obj.setConditionQuantity(selected);
                         updateDatabaseCond(nameOfSupply3, String.valueOf(selected));
-
-//                        int conditionNumber = obj.getConditionQuantity();
-//                        String quantityString = String.valueOf(conditionNumber);
-//
-//                        toast = Toast.makeText(v.getContext(), quantityString, duration);
-//                        toast.setGravity(Gravity.CENTER, 0, 0);
-//                        toast.show();
                     }
                 }
                 break;
         }
     }
 
-    public void updateDatabase(String name, String quantity) {
+    public void updateDatabase(String name, String quantity, boolean plus) {
+        int updatedQuaValue;
+
+        //MyTaskParams params = new MyTaskParams(name, quantity, plus);
         try {
             databaseHelper = new DatabaseHelper(this);
-            // Gets the data repository in write modex
-            SQLiteDatabase db = databaseHelper.getWritableDatabase();
+            db = databaseHelper.getWritableDatabase();
 
             int dbQuaValue = makeCursor(db, name);
-            int updatedQuaValue = dbQuaValue + Integer.parseInt(quantity);
+            if (plus) {
+                updatedQuaValue = dbQuaValue + Integer.parseInt(quantity);
+            } else {
+                updatedQuaValue = dbQuaValue - Integer.parseInt(quantity);
+            }
             ContentValues values = new ContentValues();
 
             values.put(Cols.QUANTITY, String.valueOf(updatedQuaValue));
@@ -223,12 +210,30 @@ public class EditingActivity extends Activity implements View.OnClickListener {
                 toast.show();
             }
 
-            cursor.close();
-            db.close();
 
         } catch (SQLiteException e) {
             Toast toast = Toast.makeText(this, "database  unavailable", Toast.LENGTH_SHORT);
             toast.show();
+        }
+    }
+
+    private class UpdateDatabaseClass extends AsyncTask<Integer, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Integer... params) {
+            return null;
+        }
+    }
+
+    private static class MyTaskParams {
+        String name;
+        String quantity;
+        boolean plus;
+
+        MyTaskParams(String name, String quantity, boolean arple) {
+            this.name = name;
+            this.quantity = quantity;
+            this.plus = plus;
         }
     }
 
@@ -237,7 +242,7 @@ public class EditingActivity extends Activity implements View.OnClickListener {
         try {
             databaseHelper = new DatabaseHelper(this);
             // Gets the data repository in write modex
-            SQLiteDatabase db = databaseHelper.getWritableDatabase();
+            db = databaseHelper.getWritableDatabase();
 
             cursor = db.query(SuppplyTable.TABLE_NAME, new String[]{Cols.NAME, Cols.QUANTITY, Cols.IMAGE_ID},
                     "name = ?", new String[]{name}, null, null, null);
@@ -254,8 +259,6 @@ public class EditingActivity extends Activity implements View.OnClickListener {
                 quantityNumber.setText("0");
             }
 
-            cursor.close();
-            db.close();
 
         } catch (SQLiteException e) {
             Toast toast3 = Toast.makeText(this, "database with cursor unavailable", Toast.LENGTH_SHORT);
@@ -298,7 +301,7 @@ public class EditingActivity extends Activity implements View.OnClickListener {
         try {
             databaseHelper = new DatabaseHelper(this);
             // Gets the data repository in write modex
-            SQLiteDatabase db = databaseHelper.getWritableDatabase();
+            db = databaseHelper.getWritableDatabase();
 
             ContentValues values = new ContentValues();
 
@@ -306,12 +309,17 @@ public class EditingActivity extends Activity implements View.OnClickListener {
 
             db.update(SuppplyTable.TABLE_NAME, values, DatabaseScheme.Cols.NAME + " = ?", new String[]{name});
 
-            db.close();
-
         } catch (SQLiteException e) {
             Toast toast = Toast.makeText(this, "database  unavailable", Toast.LENGTH_SHORT);
             toast.show();
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        cursor.close();
+
     }
 }
 
