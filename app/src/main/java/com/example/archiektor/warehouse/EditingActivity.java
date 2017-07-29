@@ -176,52 +176,61 @@ public class EditingActivity extends Activity implements View.OnClickListener {
     }
 
     public void updateDatabase(String name, String quantity, boolean plus) {
-        int updatedQuaValue;
-
-        //MyTaskParams params = new MyTaskParams(name, quantity, plus);
-        try {
-            databaseHelper = new DatabaseHelper(this);
-            db = databaseHelper.getWritableDatabase();
-
-            int dbQuaValue = makeCursor(db, name);
-            if (plus) {
-                updatedQuaValue = dbQuaValue + Integer.parseInt(quantity);
-            } else {
-                updatedQuaValue = dbQuaValue - Integer.parseInt(quantity);
-            }
-            ContentValues values = new ContentValues();
-
-            values.put(Cols.QUANTITY, String.valueOf(updatedQuaValue));
-
-            db.update(SuppplyTable.TABLE_NAME, values, DatabaseScheme.Cols.NAME + " = ?", new String[]{name});
-
-            cursor = db.query(SuppplyTable.TABLE_NAME, new String[]{Cols.NAME, Cols.QUANTITY, Cols.IMAGE_ID},
-                    "name = ?", new String[]{name}, null, null, null);
-
-            if (cursor.moveToFirst()) {
-                //String nameText = cursor.getString(0);
-                String quaText = cursor.getString(1);
-                //int photoId = cursor.getInt(2);
-
-                quantityNumber.setText(quaText);
-
-            } else {
-                Toast toast = Toast.makeText(this, "rrr", Toast.LENGTH_SHORT);
-                toast.show();
-            }
-
-
-        } catch (SQLiteException e) {
-            Toast toast = Toast.makeText(this, "database  unavailable", Toast.LENGTH_SHORT);
-            toast.show();
-        }
+        MyTaskParams params = new MyTaskParams(name, quantity, plus);
+        UpdateDatabaseClass myTask = new UpdateDatabaseClass();
+        myTask.execute(params);
     }
 
-    private class UpdateDatabaseClass extends AsyncTask<Integer, Void, Void> {
+    private class UpdateDatabaseClass extends AsyncTask<MyTaskParams, Void, String> {
 
         @Override
-        protected Void doInBackground(Integer... params) {
-            return null;
+        protected String doInBackground(MyTaskParams... params) {
+            String name = params[0].name;
+            String quantity = params[0].quantity;
+            boolean plus = params[0].plus;
+            String quaText = "empty";
+
+            int updatedQuaValue;
+
+            try {
+                databaseHelper = new DatabaseHelper(EditingActivity.this);
+                db = databaseHelper.getWritableDatabase();
+
+                int dbQuaValue = makeCursor(db, name);
+                if (plus) {
+                    updatedQuaValue = dbQuaValue + Integer.parseInt(quantity);
+                } else {
+                    updatedQuaValue = dbQuaValue - Integer.parseInt(quantity);
+                }
+                ContentValues values = new ContentValues();
+
+                values.put(Cols.QUANTITY, String.valueOf(updatedQuaValue));
+
+                db.update(SuppplyTable.TABLE_NAME, values, DatabaseScheme.Cols.NAME + " = ?", new String[]{name});
+
+                cursor = db.query(SuppplyTable.TABLE_NAME, new String[]{Cols.NAME, Cols.QUANTITY, Cols.IMAGE_ID},
+                        "name = ?", new String[]{name}, null, null, null);
+
+                if (cursor.moveToFirst()) {
+                    quaText = cursor.getString(1);
+                } else {
+                    Toast toast = Toast.makeText(EditingActivity.this, "rrr", Toast.LENGTH_SHORT);
+                    toast.show();
+                }
+
+
+            } catch (SQLiteException e) {
+                Toast toast = Toast.makeText(EditingActivity.this, "database  unavailable", Toast.LENGTH_SHORT);
+                toast.show();
+            }
+            return quaText;
+        }
+
+        @Override
+        protected void onPostExecute(String quaText) {
+            if (!quaText.equals("empty")) {
+                quantityNumber.setText(quaText);
+            }
         }
     }
 
@@ -230,7 +239,7 @@ public class EditingActivity extends Activity implements View.OnClickListener {
         String quantity;
         boolean plus;
 
-        MyTaskParams(String name, String quantity, boolean arple) {
+        MyTaskParams(String name, String quantity, boolean plus) {
             this.name = name;
             this.quantity = quantity;
             this.plus = plus;
@@ -244,8 +253,7 @@ public class EditingActivity extends Activity implements View.OnClickListener {
             // Gets the data repository in write modex
             db = databaseHelper.getWritableDatabase();
 
-            cursor = db.query(SuppplyTable.TABLE_NAME, new String[]{Cols.NAME, Cols.QUANTITY, Cols.IMAGE_ID},
-                    "name = ?", new String[]{name}, null, null, null);
+            cursor = db.query(SuppplyTable.TABLE_NAME, new String[]{Cols.NAME, Cols.QUANTITY, Cols.CONDITION}, "name = ?", new String[]{name}, null, null, null);
 
             if (cursor.moveToFirst()) {
                 String nameText = cursor.getString(0);

@@ -16,7 +16,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".EditingActivity"></activity>
+        <activity android:name=".EditingActivity">
+
+        </activity>
+        <service
+            android:name=".DelayedService"
+            android:exported="false">
+        </service>
     </application>
 
 </manifest>

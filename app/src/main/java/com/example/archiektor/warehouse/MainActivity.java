@@ -28,6 +28,8 @@ public class MainActivity extends Activity {
         // preparing list data
         prepareListData();
 
+        connectWithService();
+
         listAdapter = new ExpandableListAdapter(this, listTitle, listDetail);
 
         expListView.setAdapter(listAdapter);
@@ -146,13 +148,14 @@ return false;
         listDetail.put(listTitle.get(4), spacer);
         listDetail.put(listTitle.get(5), woodscrew);
 
-//        listDetail.put(listTitle.get(0).getName(), bolt); // Header, Child data
-//        listDetail.put(listTitle.get(1).getName(), butterflynut);
-//        listDetail.put(listTitle.get(2).getName(), metallscrew);
-//        listDetail.put(listTitle.get(3).getName(), rivet);
-//        listDetail.put(listTitle.get(4).getName(), spacer);
-//        listDetail.put(listTitle.get(5).getName(), woodscrew);
 
     }
 
+    private void connectWithService() {
+        Intent intent = new Intent(this, DelayedService.class);
+        startService(intent);
+    }
+
 }
+
+
